@@ -1,0 +1,54 @@
+---
+  routes: 
+    - 
+      group: "event-server"
+      minversion: "v1.0"
+      maxversion: "v1.0"
+      list: 
+        - 
+          handler: "GetHealthCheck"
+          method: "get"
+          uri: "/healthcheck/_check"
+          precheck: false
+        - 
+          handler: "GetVersion"
+          method: "get"
+          uri: "/:apiver/version"
+          precheck: false
+        - 
+          handler: "PostEventLogin"
+          method: "post"
+          uri: "/:apiver/auth/login"
+          precheck: false
+        -
+          handler: "GetEventDuplicate"  # 이벤트 중복 체크 요청
+          method: "get"
+          uri: "/:apiver/event/shose/duplicate"
+          precheck: true
+        -
+          handler: "PutEventSubmit" # 응모하기
+          method: "put"
+          uri: "/:apiver/event/shose/submit"
+          precheck: true
+        - 
+          handler: "GetEventResult"   # 본인 당첨 확인
+          method: "get"
+          uri: "/:apiver/event/shose/result"
+          precheck: true
+        - 
+          handler: "GetEventWinner"   # 당첨자 조회
+          method: "get"
+          uri: "/:apiver/event/shose/winner"
+          precheck: false
+        - 
+          handler: "PostEventPurchaseNoti"   # 구매 정보 전달
+          method: "post"
+          uri: "/:apiver/event/shose/purchasenoti"
+          precheck: true
+        -
+          handler: "GetLatestSubmitList"
+          method: "get"
+          uri: "/:apiver/event/shose/latestsubmitList"
+          precheck: false
+  
+
