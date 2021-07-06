@@ -15,6 +15,15 @@
           method: "get"
           uri: "/:apiver/version"
           precheck: false
-
+        - 
+          handler: "PostResetWinner"
+          method: "post"
+          uri: "/:apiver/event/shose/reset_winner"
+          precheck: true
+        - 
+          handler: "PostResetPurchase"
+          method: "post"
+          uri: "/:apiver/event/shose/reset_purchase"
+          precheck: true
 
         

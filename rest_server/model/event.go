@@ -31,6 +31,23 @@ func (o *DB) GetEventInfo(walletAddr string) (*context.Submit, error) {
 	return info, nil
 }
 
+func (o *DB) PostResetPurchase(resetPurchase *context.ResetPurchase) error {
+	sqlQuery := "UPDATE ipblock.event_item set owner=?, purchase_tx_hash=?, purchase_ts=? WHERE idx=?"
+
+	_, err := o.Mysql.PrepareAndExec(sqlQuery, "", "", "", resetPurchase.ItemNum)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	return nil
+}
+
 func (o *DB) PutEventSubmit(submit *context.Submit) (int64, error) {
 	sqlQuery := fmt.Sprintf("INSERT INTO ipblock.event_attendees(wallet_address, item_num, email, ts, submit_cnt, balance) VALUES (?,?,?,?,?,?)")
 

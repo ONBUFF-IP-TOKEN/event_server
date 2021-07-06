@@ -261,7 +261,6 @@ func PostEventPurchaseNoti(c echo.Context) error {
 }
 
 func GetLatestSubmitList(c echo.Context) error {
-	//ctx := base.GetContext(c).(*context.IPBlockServerContext)
 	params := context.NewSubmitList()
 	if err := c.Bind(params); err != nil {
 		log.Error(err)
@@ -271,14 +270,6 @@ func GetLatestSubmitList(c echo.Context) error {
 	if err := params.CheckValidate(&c); err != nil {
 		return c.JSON(http.StatusOK, err)
 	}
-	// if err := ctx.EchoContext.Bind(params); err != nil {
-	// 	log.Error(err)
-	// 	return base.BaseJSONInternalServerError(c, err)
-	// }
-
-	// if err := params.CheckValidate(ctx); err != nil {
-	// 	return c.JSON(http.StatusOK, err)
-	// }
 
 	// 유효한 item_number check
 	itemInfo, errItem := GetExistItem(c, params.ItemNum)
@@ -292,7 +283,9 @@ func GetLatestSubmitList(c echo.Context) error {
 		resp.SetResult(constant.Result_DBError)
 	} else {
 		resp.Success()
-		resp.Value = submits
+		submitLst := context.ResSubmitList{}
+		submitLst.List = submits
+		resp.Value = submitLst
 	}
 
 	return c.JSON(http.StatusOK, resp)

@@ -60,3 +60,11 @@ func (o *InternalAPI) GetHealthCheck(c echo.Context) error {
 func (o *InternalAPI) GetVersion(c echo.Context) error {
 	return commonapi.GetVersion(c, o.BaseController.MaxVersion)
 }
+
+func (o *InternalAPI) PostResetWinner(c echo.Context) error {
+	return commonapi.PostResetWinner(c)
+}
+
+func (o *InternalAPI) PostResetPurchase(c echo.Context) error {
+	return commonapi.PostResetPurchase(c)
+}

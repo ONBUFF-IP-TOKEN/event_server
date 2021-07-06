@@ -222,4 +222,26 @@ func (o *SubmitList) CheckValidate(ctx *echo.Context) *constant.OnbuffBaseRespon
 	return nil
 }
 
+type ResSubmitList struct {
+	List []Submit `json:"submit_list" validate:"required"`
+}
+
+/////////////////////////
+
+// 구매 정보 초기화
+type ResetPurchase struct {
+	ItemNum int64 `json:"item_number" validate:"required" query:"item_number"`
+}
+
+func NewResetPurchase() *ResetPurchase {
+	return new(ResetPurchase)
+}
+
+func (o *ResetPurchase) CheckValidate() *constant.OnbuffBaseResponse {
+	if o.ItemNum <= 0 {
+		return constant.MakeOnbuffBaseResponse(constant.Result_InvalidItemNumber)
+	}
+	return nil
+}
+
 /////////////////////////
