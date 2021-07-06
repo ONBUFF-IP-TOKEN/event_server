@@ -34,7 +34,7 @@ func (o *DB) GetEventInfo(walletAddr string) (*context.Submit, error) {
 func (o *DB) PostResetPurchase(resetPurchase *context.ResetPurchase) error {
 	sqlQuery := "UPDATE ipblock.event_item set owner=?, purchase_tx_hash=?, purchase_ts=? WHERE idx=?"
 
-	_, err := o.Mysql.PrepareAndExec(sqlQuery, "", "", "", resetPurchase.ItemNum)
+	_, err := o.Mysql.PrepareAndExec(sqlQuery, "", "", nil, resetPurchase.ItemNum)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -112,10 +112,10 @@ func (o *DB) GetEventItem(itemNum int64) (*EventItemInfo, error) {
 	item := &EventItemInfo{}
 
 	var ret, owner, purchaseTxHash, tokenUri sql.NullString
-	var tokenId, purchaseTx, submitStart, submitEnd, minAmount sql.NullInt64
+	var tokenId, purchaseTs, submitStart, submitEnd, minAmount sql.NullInt64
 	info := &context.Submit{}
 	if rows.Next() {
-		if err := rows.Scan(&item.Idx, &item.Name, &item.Serial, &tokenId, &tokenUri, &owner, &purchaseTxHash, &purchaseTx, &submitStart, &submitEnd, &minAmount, &item.Info); err != nil {
+		if err := rows.Scan(&item.Idx, &item.Name, &item.Serial, &tokenId, &tokenUri, &owner, &purchaseTxHash, &purchaseTs, &submitStart, &submitEnd, &minAmount, &item.Info); err != nil {
 			log.Error(err)
 		}
 		info.Ret = ret.String
@@ -123,7 +123,7 @@ func (o *DB) GetEventItem(itemNum int64) (*EventItemInfo, error) {
 		item.TokenId = tokenId.Int64
 		item.TokenUri = tokenUri.String
 		item.PurchaseTxHash = purchaseTxHash.String
-		item.PurchaseTs = purchaseTx.Int64
+		item.PurchaseTs = purchaseTs.Int64
 		item.SubmitStart = submitStart.Int64
 		item.SubmitEnd = submitEnd.Int64
 		item.MinAmountForSumbit = minAmount.Int64

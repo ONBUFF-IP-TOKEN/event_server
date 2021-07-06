@@ -65,6 +65,11 @@ func PutEventSubmit(c echo.Context) error {
 	}
 
 	// 유효한 item_number check
+	if _, err := CheckExistItem(c, params.ItemNum); err != nil {
+		return c.JSON(http.StatusOK, err)
+	}
+
+	// 기간 체크 check
 	itemInfo, errItem := GetExistItem(c, params.ItemNum)
 	if errItem != nil {
 		return c.JSON(http.StatusOK, errItem)
