@@ -13,7 +13,6 @@ type TokenInfo struct {
 	MainnetHost      string   `yaml:"mainnet_host"`
 	ServerWalletAddr string   `yaml:"server_wallet_address"`
 	ServerPrivateKey string   `yaml:"server_private_key"`
-	ONITTokenAddr    string   `yaml:"onit_token_address"`
 	TokenAddrs       []string `yaml:"token_address"`
 }
 
