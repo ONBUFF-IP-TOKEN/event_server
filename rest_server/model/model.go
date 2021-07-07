@@ -20,5 +20,6 @@ type EventItemInfo struct {
 	SubmitStart        int64
 	SubmitEnd          int64
 	MinAmountForSumbit int64
+	Price              int64
 	Info               string
 }

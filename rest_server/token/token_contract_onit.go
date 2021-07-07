@@ -1,10 +1,13 @@
 package token
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"math/big"
+	"strings"
 	"time"
 
 	"github.com/ONBUFF-IP-TOKEN/baseutil/log"
@@ -40,7 +43,7 @@ func (o *Token) Onit_GetBalanceOf(walletAddr string) (int64, error) {
 	return baseBal.Int64(), err
 }
 
-func (o *Token) CheckTransferResponse(purchaseInfo *context.PurchaseNoti) {
+func (o *Token) CheckTransferResponse(purchaseInfo *context.PurchaseNoti, itemPrice int64) {
 	go func() {
 		errCnt := 0
 	POLLING:
@@ -62,12 +65,49 @@ func (o *Token) CheckTransferResponse(purchaseInfo *context.PurchaseNoti) {
 				for _, logInfo := range receipt.Logs {
 					fmt.Printf("GetTransactionReceipt Logs %+v\n", logInfo)
 				}
+
+				log.Info("topics 0 : ", receipt.Logs[0].Topics[0].Hex())
+				log.Info("topics 1 : ", receipt.Logs[0].Topics[1].Hex())
+				log.Info("topics 2 : ", receipt.Logs[0].Topics[2].Hex())
+
 				log.Info("GetTransactionReceipt TxHash:", receipt.TxHash.Hex())
 				log.Info("GetTransactionReceipt contractAddress :", receipt.ContractAddress.Hex())
 				log.Info("GetTransactionReceipt GasUsed:", receipt.GasUsed)
 				log.Info("GetTransactionReceipt blockhash :", receipt.BlockHash.Hex())
 				log.Info("GetTransactionReceipt blocknumber :", receipt.BlockNumber)
 				log.Info("GetTransactionReceipt TransactionIndex:", receipt.TransactionIndex)
+
+				//token contract address check
+				log.Info("token address : ", receipt.Logs[0].Address.Hex())
+				if strings.ToUpper(o.conf.TokenAddrs[o.TokenType]) != strings.ToUpper(receipt.Logs[0].Address.Hex()) {
+					log.Error("Invalid token address :", receipt.Logs[0].Address.Hex())
+					return
+				}
+
+				//받는 사람 보내는 사람 check
+				fromAddr := strings.Replace(receipt.Logs[0].Topics[1].Hex(), "000000000000000000000000", "", -1)
+				toAddr := strings.Replace(receipt.Logs[0].Topics[2].Hex(), "000000000000000000000000", "", -1)
+				if strings.ToUpper(purchaseInfo.WalletAddr) != strings.ToUpper(fromAddr) {
+					log.Error("Invalid from address :", fromAddr)
+					return
+				}
+				if strings.ToUpper(o.conf.ServerWalletAddr) != strings.ToUpper(toAddr) {
+					log.Error("Invalid to address :", toAddr)
+					return
+				}
+				// 구입 액수 check
+				value := new(big.Int)
+				value.SetString(hex.EncodeToString(receipt.Logs[0].Data), 16)
+				//value, _ := strconv.ParseInt(hex.EncodeToString(receipt.Logs[0].Data), 16, 64)
+				log.Info("transfer value :", value)
+
+				transferEther := ConvertWeiToEther(value.String())
+				price := new(big.Rat).SetInt64(itemPrice)
+				if transferEther.Cmp(price) != 0 {
+					log.Error("Invalid purchase price :", transferEther.String())
+					return
+				}
+
 				//결과 파일 갱신
 				purchaseInfo.VerifyCheckComplete = "success"
 				file, _ := json.MarshalIndent(purchaseInfo, "", " ")
@@ -118,4 +158,16 @@ func (o *Token) CheckTransferResponse(purchaseInfo *context.PurchaseNoti) {
 			goto POLLING
 		}
 	}()
+}
+
+func ConvertWeiToEther(w string) *big.Rat {
+	v, ok := new(big.Rat).SetString(w)
+	if !ok {
+		return nil
+	}
+
+	fromUnit := new(big.Int).SetInt64(int64(math.Pow10(0)))
+	toUnit := new(big.Int).SetInt64(int64(math.Pow10(18)))
+
+	return v.Mul(v, new(big.Rat).SetFrac(fromUnit, toUnit))
 }

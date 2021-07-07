@@ -252,7 +252,7 @@ func PostEventPurchaseNoti(c echo.Context) error {
 					file, _ := json.MarshalIndent(params, "", " ")
 					_ = ioutil.WriteFile("ok.json", file, 0644)
 					// 당첨자라면 메타마스크 tx hash 확인 진행
-					token.GetToken().Tokens[token.Token_onit].CheckTransferResponse(params)
+					token.GetToken().Tokens[token.Token_onit].CheckTransferResponse(params, itemInfo.Price)
 					resp.Success()
 				}
 			} else if len(info.Ret) == 0 || strings.ToUpper(info.Ret) != "OK" {

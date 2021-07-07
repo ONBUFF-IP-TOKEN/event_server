@@ -111,14 +111,13 @@ func (o *DB) GetEventItem(itemNum int64) (*EventItemInfo, error) {
 
 	item := &EventItemInfo{}
 
-	var ret, owner, purchaseTxHash, tokenUri sql.NullString
+	var owner, purchaseTxHash, tokenUri, info sql.NullString
 	var tokenId, purchaseTs, submitStart, submitEnd, minAmount sql.NullInt64
-	info := &context.Submit{}
 	if rows.Next() {
-		if err := rows.Scan(&item.Idx, &item.Name, &item.Serial, &tokenId, &tokenUri, &owner, &purchaseTxHash, &purchaseTs, &submitStart, &submitEnd, &minAmount, &item.Info); err != nil {
+		if err := rows.Scan(&item.Idx, &item.Name, &item.Serial, &tokenId, &tokenUri, &owner,
+			&purchaseTxHash, &purchaseTs, &submitStart, &submitEnd, &minAmount, &item.Price, &info); err != nil {
 			log.Error(err)
 		}
-		info.Ret = ret.String
 		item.Owner = owner.String
 		item.TokenId = tokenId.Int64
 		item.TokenUri = tokenUri.String
@@ -127,6 +126,7 @@ func (o *DB) GetEventItem(itemNum int64) (*EventItemInfo, error) {
 		item.SubmitStart = submitStart.Int64
 		item.SubmitEnd = submitEnd.Int64
 		item.MinAmountForSumbit = minAmount.Int64
+		item.Info = info.String
 	}
 	return item, nil
 }
