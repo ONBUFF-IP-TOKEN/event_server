@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"math"
 	"math/big"
 	"strings"
 	"time"
 
+	ethCtrl "github.com/ONBUFF-IP-TOKEN/baseEthereum/ethcontroller"
 	"github.com/ONBUFF-IP-TOKEN/baseutil/log"
 	"github.com/ONBUFF-IP-TOKEN/event-server/rest_server/controllers/context"
 	"github.com/ONBUFF-IP-TOKEN/event-server/rest_server/model"
@@ -98,10 +98,9 @@ func (o *Token) CheckTransferResponse(purchaseInfo *context.PurchaseNoti, itemPr
 				// 구입 액수 check
 				value := new(big.Int)
 				value.SetString(hex.EncodeToString(receipt.Logs[0].Data), 16)
-				//value, _ := strconv.ParseInt(hex.EncodeToString(receipt.Logs[0].Data), 16, 64)
 				log.Info("transfer value :", value)
 
-				transferEther := ConvertWeiToEther(value.String())
+				transferEther := ethCtrl.Convert(value.String(), ethCtrl.Wei, ethCtrl.Ether)
 				price := new(big.Rat).SetInt64(itemPrice)
 				if transferEther.Cmp(price) != 0 {
 					log.Error("Invalid purchase price :", transferEther.String())
@@ -158,16 +157,4 @@ func (o *Token) CheckTransferResponse(purchaseInfo *context.PurchaseNoti, itemPr
 			goto POLLING
 		}
 	}()
-}
-
-func ConvertWeiToEther(w string) *big.Rat {
-	v, ok := new(big.Rat).SetString(w)
-	if !ok {
-		return nil
-	}
-
-	fromUnit := new(big.Int).SetInt64(int64(math.Pow10(0)))
-	toUnit := new(big.Int).SetInt64(int64(math.Pow10(18)))
-
-	return v.Mul(v, new(big.Rat).SetFrac(fromUnit, toUnit))
 }
