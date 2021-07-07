@@ -26,6 +26,7 @@ build: init
 init:
 	# initialize output directory.
 	@if [ -d $(output) ]; then rm -rf $(output); fi;
+	@if [ ! -d $(output) ]; then mkdir -p $(output); fi;
 
 run: stop
 	# run in background mode
