@@ -34,6 +34,12 @@ func GetEventDuplicate(c echo.Context) error {
 		return c.JSON(http.StatusOK, err)
 	}
 
+	// 기간 체크 check
+	_, errItem := GetExistItem(c, params.ItemNum)
+	if errItem != nil {
+		return c.JSON(http.StatusOK, errItem)
+	}
+
 	resp := new(constant.OnbuffBaseResponse)
 	info, err := model.GetDB().GetEventInfo(params.WalletAddr)
 	if err != nil {
@@ -44,8 +50,22 @@ func GetEventDuplicate(c echo.Context) error {
 			resp.SetResult(constant.Result_NotExistInfo)
 		} else {
 			//이미 등록한 기록이 있음
-			resp.Success()
-			resp.Value = info
+
+			//이미 등록한 기록이 있음 등록한지 날짜가 바뀌었다면 재응모 가능
+			//날짜가 바뀌지 않았다면 재응모 불가
+			curT := datetime.GetTS2MilliSec()
+			lastTime := time.Unix(0, info.Ts*int64(time.Millisecond))
+			curTime := time.Unix(0, curT*int64(time.Millisecond))
+			if lastTime.Year() == curTime.Year() &&
+				lastTime.Month() == curTime.Month() &&
+				lastTime.Day() == curTime.Day() {
+				resp.SetResult(constant.Result_ExistInfo)
+				resp.Value = info
+			} else {
+				//재 응모 가능
+				resp.Success()
+				resp.Value = info
+			}
 		}
 	}
 
