@@ -21,12 +21,14 @@ func (o *DB) GetEventInfo(walletAddr string) (*context.Submit, error) {
 	defer rows.Close()
 
 	var ret sql.NullString
+	var submitCnt sql.NullInt64
 	info := &context.Submit{}
 	if rows.Next() {
-		if err := rows.Scan(&info.Idx, &info.WalletAddr, &info.ItemNum, &info.Email, &info.Ts, &ret, &info.SubmitCnt, &info.LastBalance); err != nil {
+		if err := rows.Scan(&info.Idx, &info.WalletAddr, &info.ItemNum, &info.Email, &info.Ts, &ret, &submitCnt, &info.LastBalance); err != nil {
 			log.Error(err)
 		}
 		info.Ret = ret.String
+		info.SubmitCnt = submitCnt.Int64
 	}
 	return info, nil
 }
@@ -144,14 +146,15 @@ func (o *DB) GetLatestSubmitList(itemIdx int64) ([]context.Submit, error) {
 
 	submits := make([]context.Submit, 0)
 	var ret sql.NullString
+	var submitCnt sql.NullInt64
 
 	for rows.Next() {
 		info := context.Submit{}
-		if err := rows.Scan(&info.Idx, &info.WalletAddr, &info.ItemNum, &info.Email, &info.Ts, &ret, &info.SubmitCnt, &info.LastBalance); err != nil {
+		if err := rows.Scan(&info.Idx, &info.WalletAddr, &info.ItemNum, &info.Email, &info.Ts, &ret, &submitCnt, &info.LastBalance); err != nil {
 			log.Error(err)
 		}
 		info.Email = ""
-		info.SubmitCnt = 0
+		info.SubmitCnt = submitCnt.Int64
 
 		first := info.WalletAddr[0:6]
 		last := info.WalletAddr[len(info.WalletAddr)-4:]
