@@ -37,7 +37,7 @@ run: stop
 stat:
 	- @pgrep $(app)
 stop:
-	- @pkill -9 $(app)
+	- @pkillall -9 $(app)
 
 test: 
 	# test
