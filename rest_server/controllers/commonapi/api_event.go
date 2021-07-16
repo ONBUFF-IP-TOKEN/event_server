@@ -47,7 +47,8 @@ func GetEventDuplicate(c echo.Context) error {
 	} else {
 		if len(info.WalletAddr) == 0 && len(info.Email) == 0 {
 			//등록한 기록이 없다.
-			resp.SetResult(constant.Result_NotExistInfo)
+			//resp.SetResult(constant.Result_NotExistInfo)
+			resp.Success() //등록한 기록이 없으면 성공으로 처리
 		} else {
 			//이미 등록한 기록이 있음
 
