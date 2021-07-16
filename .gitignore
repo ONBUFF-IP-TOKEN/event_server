@@ -5,3 +5,4 @@ etc/conf/config.local.yml
 etc/conf/config.live.yml
 etc/onbuffcerti.crt
 etc/onbuffcerti.key
+etc/conf/config.local_live.yml

@@ -28,10 +28,12 @@ func PostLogin(c echo.Context) error {
 	// 1. verify sign check
 	if !token.GetToken().VerifySign(params.WalletAuth.WalletAddr, params.WalletAuth.Message, params.WalletAuth.Sign) {
 		// invalid sign info
+		log.Info("login fail addr : ", params.WalletAuth.WalletAddr)
 		resp.SetResult(constant.Result_Auth_InvalidLoginInfo)
 		return c.JSON(http.StatusOK, resp)
 	}
 
+	log.Info("login success addr : ", params.WalletAuth.WalletAddr)
 	// 2. redis duplicate check
 	if authInfo, err := model.GetDB().GetAuthInfo(params.WalletAuth.WalletAddr); err == nil {
 		// redis에 기존 정보가 있다면 기존에 발급된 토큰으로 응답한다.

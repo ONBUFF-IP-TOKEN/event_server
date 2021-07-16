@@ -10,7 +10,7 @@ import (
 )
 
 func (o *DB) GetEventInfo(walletAddr string) (*context.Submit, error) {
-	sqlQuery := fmt.Sprintf("SELECT * FROM ipblock.event_attendees WHERE wallet_address='%v'", walletAddr)
+	sqlQuery := fmt.Sprintf("SELECT * FROM event_attendees WHERE wallet_address='%v'", walletAddr)
 	rows, err := o.Mysql.Query(sqlQuery)
 
 	if err != nil {
@@ -32,7 +32,7 @@ func (o *DB) GetEventInfo(walletAddr string) (*context.Submit, error) {
 }
 
 func (o *DB) PostResetPurchase(resetPurchase *context.ResetPurchase) error {
-	sqlQuery := "UPDATE ipblock.event_item set owner=?, purchase_tx_hash=?, purchase_ts=? WHERE idx=?"
+	sqlQuery := "UPDATE event_item set owner=?, purchase_tx_hash=?, purchase_ts=? WHERE idx=?"
 
 	_, err := o.Mysql.PrepareAndExec(sqlQuery, "", "", nil, resetPurchase.ItemNum)
 	if err != nil {
@@ -49,7 +49,7 @@ func (o *DB) PostResetPurchase(resetPurchase *context.ResetPurchase) error {
 }
 
 func (o *DB) PutEventSubmit(submit *context.Submit) (int64, error) {
-	sqlQuery := fmt.Sprintf("INSERT INTO ipblock.event_attendees(wallet_address, item_num, email, ts, submit_cnt, balance) VALUES (?,?,?,?,?,?)")
+	sqlQuery := fmt.Sprintf("INSERT INTO event_attendees(wallet_address, item_num, email, ts, submit_cnt, balance) VALUES (?,?,?,?,?,?)")
 
 	result, err := o.Mysql.PrepareAndExec(sqlQuery, submit.WalletAddr, submit.ItemNum, submit.Email, submit.Ts, submit.SubmitCnt, submit.LastBalance)
 	if err != nil {
@@ -66,7 +66,7 @@ func (o *DB) PutEventSubmit(submit *context.Submit) (int64, error) {
 }
 
 func (o *DB) UpdateEventSubmit(submit *context.Submit) (int64, error) {
-	sqlQuery := "UPDATE ipblock.event_attendees set ts=?, submit_cnt=?, balance=? WHERE wallet_address=?"
+	sqlQuery := "UPDATE event_attendees set ts=?, submit_cnt=?, balance=? WHERE wallet_address=?"
 
 	result, err := o.Mysql.PrepareAndExec(sqlQuery, submit.Ts, submit.SubmitCnt, submit.LastBalance, submit.WalletAddr)
 	if err != nil {
@@ -83,7 +83,7 @@ func (o *DB) UpdateEventSubmit(submit *context.Submit) (int64, error) {
 }
 
 func (o *DB) UpdateEventVerifyPurchase(purchaseInfo *context.PurchaseNoti) (int64, error) {
-	sqlQuery := "UPDATE ipblock.event_item set owner=?, purchase_tx_hash=?, purchase_ts=? WHERE idx=?"
+	sqlQuery := "UPDATE event_item set owner=?, purchase_tx_hash=?, purchase_ts=? WHERE idx=?"
 
 	result, err := o.Mysql.PrepareAndExec(sqlQuery, purchaseInfo.WalletAddr, purchaseInfo.PurchaseTxHash, datetime.GetTS2MilliSec(), purchaseInfo.ItemNum)
 	if err != nil {
@@ -99,7 +99,7 @@ func (o *DB) UpdateEventVerifyPurchase(purchaseInfo *context.PurchaseNoti) (int6
 }
 
 func (o *DB) GetEventItem(itemNum int64) (*EventItemInfo, error) {
-	sqlQuery := fmt.Sprintf("SELECT * FROM ipblock.event_item WHERE idx=%v", itemNum)
+	sqlQuery := fmt.Sprintf("SELECT * FROM event_item WHERE idx=%v", itemNum)
 	rows, err := o.Mysql.Query(sqlQuery)
 
 	if err != nil {
@@ -132,7 +132,7 @@ func (o *DB) GetEventItem(itemNum int64) (*EventItemInfo, error) {
 }
 
 func (o *DB) GetLatestSubmitList(itemIdx int64) ([]context.Submit, error) {
-	sqlQuery := fmt.Sprintf("SELECT * FROM ipblock.event_attendees WHERE item_num=%v ORDER BY ts DESC LIMIT 0, 5", itemIdx)
+	sqlQuery := fmt.Sprintf("SELECT * FROM event_attendees WHERE item_num=%v ORDER BY ts DESC LIMIT 0, 5", itemIdx)
 	rows, err := o.Mysql.Query(sqlQuery)
 
 	if err != nil {
