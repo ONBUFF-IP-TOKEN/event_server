@@ -8,14 +8,16 @@ revVersion=$(shell git rev-parse --short HEAD)
 server_int_api=internal_api.yml
 server_ext_api=external_api.yml
 
-# set variables for build
-output=bin
-app=event-server
-src=cmd/$(app)
-
 ifeq ("$(env)", "")
 env=local
 endif
+
+# set variables for build
+output=bin
+app=event-server-$(env)
+src=cmd/$(app)
+
+
 
 # set variables for dependencies
 
