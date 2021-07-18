@@ -60,6 +60,7 @@ func GetEventDuplicate(c echo.Context) error {
 			if lastTime.Year() == curTime.Year() &&
 				lastTime.Month() == curTime.Month() &&
 				lastTime.Day() == curTime.Day() {
+				log.Info("GetEventDuplicate error : ", constant.ResultCodeText(constant.Result_ExistInfo), "  from:", params.WalletAddr)
 				resp.SetResult(constant.Result_ExistInfo)
 				resp.Value = info
 			} else {
