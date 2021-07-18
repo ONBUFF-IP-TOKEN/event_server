@@ -60,7 +60,7 @@ func GetEventDuplicate(c echo.Context) error {
 			if lastTime.Year() == curTime.Year() &&
 				lastTime.Month() == curTime.Month() &&
 				lastTime.Day() == curTime.Day() {
-				log.Info("GetEventDuplicate error : ", constant.ResultCodeText(constant.Result_ExistInfo), "  from:", params.WalletAddr)
+				log.Info("GetEventDuplicate : ", constant.ResultCodeText(constant.Result_ExistInfo), "  from:", params.WalletAddr)
 				resp.SetResult(constant.Result_ExistInfo)
 				resp.Value = info
 			} else {
@@ -112,14 +112,14 @@ func PutEventSubmit(c echo.Context) error {
 			params.LastBalance = balance
 			if balance < itemInfo.MinAmountForSumbit {
 				// onit 이 최소 보유량보다 적으면 에러 리턴
-				log.Info("error : ", constant.ResultCodeText(constant.Result_NotEnoughTokenForSubmit), "  from:", params.WalletAddr)
+				log.Info("PutEventSubmit : ", constant.ResultCodeText(constant.Result_NotEnoughTokenForSubmit), "  from:", params.WalletAddr)
 				resp.SetResult(constant.Result_NotEnoughTokenForSubmit)
 			} else {
 				// db 저장
 				if _, err := model.GetDB().PutEventSubmit(params); err != nil {
 					resp.SetResult(constant.Result_DBError)
 				} else {
-					log.Info("Submit success : ", params.WalletAddr, " count:", params.SubmitCnt, " amount:", balance)
+					log.Info("PutEventSubmit success : ", params.WalletAddr, " count:", params.SubmitCnt, " amount:", balance)
 					resp.Success()
 					resp.Value = params
 				}
@@ -133,7 +133,7 @@ func PutEventSubmit(c echo.Context) error {
 				lastTime.Month() == curTime.Month() &&
 				lastTime.Day() == curTime.Day() {
 				//if curT < info.Ts+24*3600*1000 { // 응모하고 만 하루 지난것으로 체크할것인지 예비코드
-				log.Info("error : ", constant.ResultCodeText(constant.Result_ExistInfo), "  from:", params.WalletAddr)
+				log.Info("PutEventSubmit : ", constant.ResultCodeText(constant.Result_ExistInfo), "  from:", params.WalletAddr)
 				resp.SetResult(constant.Result_ExistInfo)
 				resp.Value = info
 			} else {
@@ -145,14 +145,14 @@ func PutEventSubmit(c echo.Context) error {
 				params.LastBalance = balance
 				if balance < itemInfo.MinAmountForSumbit {
 					// onit 이 최소 보유량보다 적으면 에러 리턴
-					log.Info("error : ", constant.ResultCodeText(constant.Result_NotEnoughTokenForSubmit), "  from:", params.WalletAddr)
+					log.Info("PutEventSubmit : ", constant.ResultCodeText(constant.Result_NotEnoughTokenForSubmit), "  from:", params.WalletAddr)
 					resp.SetResult(constant.Result_NotEnoughTokenForSubmit)
 				} else {
 					// db 저장
 					if _, err := model.GetDB().UpdateEventSubmit(params); err != nil {
 						resp.SetResult(constant.Result_DBError)
 					} else {
-						log.Info("Submit success : ", params.WalletAddr, " count:", params.SubmitCnt, " amount:", balance)
+						log.Info("PutEventSubmit success : ", params.WalletAddr, " count:", params.SubmitCnt, " amount:", balance)
 						resp.Success()
 						resp.Value = params
 					}
