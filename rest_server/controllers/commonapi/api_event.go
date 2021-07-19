@@ -129,6 +129,8 @@ func PutEventSubmit(c echo.Context) error {
 			//날짜가 바뀌지 않았다면 재응모 불가
 			lastTime := time.Unix(0, info.Ts*int64(time.Millisecond))
 			curTime := time.Unix(0, curT*int64(time.Millisecond))
+			lastTime = lastTime.In(time.FixedZone("KST", 9*60*60))
+			curTime = curTime.In(time.FixedZone("KST", 9*60*60))
 			log.Info(lastTime.Hour(), " ", curTime.Hour())
 			if lastTime.Year() == curTime.Year() &&
 				lastTime.Month() == curTime.Month() &&
