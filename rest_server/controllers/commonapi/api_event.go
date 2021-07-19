@@ -57,6 +57,9 @@ func GetEventDuplicate(c echo.Context) error {
 			curT := datetime.GetTS2MilliSec()
 			lastTime := time.Unix(0, info.Ts*int64(time.Millisecond))
 			curTime := time.Unix(0, curT*int64(time.Millisecond))
+			lastTime = lastTime.In(time.FixedZone("KST", 9*60*60))
+			curTime = curTime.In(time.FixedZone("KST", 9*60*60))
+			log.Info(lastTime.Hour(), " ", curTime.Hour())
 			if lastTime.Year() == curTime.Year() &&
 				lastTime.Month() == curTime.Month() &&
 				lastTime.Day() == curTime.Day() {
