@@ -20,6 +20,8 @@ const (
 	Result_InvalidWalletAddress    = 30013
 	Result_NotEnoughTokenForSubmit = 30014
 	Result_NotSubmitPeriod         = 30015
+	Result_PurchaseStep1Err        = 30016
+	Result_InvalidPurchaeStep      = 30017
 
 	Result_MaxLengthExceed = 31000
 
@@ -49,6 +51,8 @@ var resultCodeText = map[int]string{
 	Result_InvalidWalletAddress:    "Invalid Wallet Address",
 	Result_NotEnoughTokenForSubmit: "Not enough token for submit",
 	Result_NotSubmitPeriod:         "There is no submit period",
+	Result_PurchaseStep1Err:        "Step1 must be done first",
+	Result_InvalidPurchaeStep:      "Invalid purchase step",
 
 	Result_RequiredPurchaseNoti: "Purchase hash is required",
 

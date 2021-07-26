@@ -281,11 +281,28 @@ func PostEventPurchaseNoti(c echo.Context) error {
 					resp.SetResult(constant.Result_AlreayPurchase)
 				} else {
 					// 당첨자 기록 파일로그로 남기기
-					file, _ := json.MarshalIndent(params, "", " ")
-					_ = ioutil.WriteFile("ok.json", file, 0644)
-					// 당첨자라면 메타마스크 tx hash 확인 진행
-					token.GetToken().Tokens[token.Token_onit].CheckTransferResponse(params, itemInfo.Price)
-					resp.Success()
+					if len(params.ShippingAddr) != 0 && len(params.PhoneNum) != 0 && len(params.PurchaseTxHash) == 0 {
+						// step1. 주소, 전화 번호 먼저 기록
+						file, _ := json.MarshalIndent(params, "", " ")
+						_ = ioutil.WriteFile("ok.json", file, 0644)
+						resp.Success()
+					} else if len(params.ShippingAddr) == 0 && len(params.PhoneNum) == 0 && len(params.PurchaseTxHash) != 0 {
+						// step2. 당첨자라면 메타마스크 tx hash 확인 진행
+						file, err := ioutil.ReadFile("ok.json")
+						existInfo := context.NewPurchaseNoti()
+						_ = json.Unmarshal(file, existInfo)
+						if err != nil || len(existInfo.ShippingAddr) == 0 || len(existInfo.PhoneNum) == 0 {
+							resp.SetResult(constant.Result_PurchaseStep1Err)
+						} else {
+							params.PhoneNum = existInfo.PhoneNum
+							params.ShippingAddr = existInfo.ShippingAddr
+							token.GetToken().Tokens[token.Token_onit].CheckTransferResponse(params, itemInfo.Price)
+							resp.Success()
+						}
+					} else {
+						// step에 맞지 않은 처리
+						resp.SetResult(constant.Result_InvalidPurchaeStep)
+					}
 				}
 			} else if len(info.Ret) == 0 || strings.ToUpper(info.Ret) != "OK" {
 				//꽝

@@ -193,9 +193,9 @@ func (o *PurchaseNoti) CheckValidate(ctx *IPBlockServerContext) *constant.Onbuff
 	if len(o.WalletAddr) == 0 {
 		return constant.MakeOnbuffBaseResponse(constant.Result_RequireWalletAddress)
 	}
-	if len(o.PurchaseTxHash) == 0 {
-		return constant.MakeOnbuffBaseResponse(constant.Result_RequiredPurchaseNoti)
-	}
+	//if len(o.PurchaseTxHash) == 0 {
+	//	return constant.MakeOnbuffBaseResponse(constant.Result_RequiredPurchaseNoti)
+	//}
 	if o.ItemNum <= 0 {
 		return constant.MakeOnbuffBaseResponse(constant.Result_InvalidItemNumber)
 	}
